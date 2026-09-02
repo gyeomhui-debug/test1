@@ -1,86 +1,109 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>보건복지 업무 계산기 10종</title>
-<style>
-:root{
-  --navy:#123b66; --blue:#1976d2; --light:#f4f7fb; --line:#dbe3ee;
-  --text:#1f2a37; --muted:#667085; --white:#fff; --green:#0f9d58;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,"Noto Sans KR",sans-serif;background:var(--light);color:var(--text)}
-header{background:linear-gradient(135deg,#123b66,#1f5f98);color:#fff;padding:28px 20px}
-.wrap{max-width:1180px;margin:0 auto}
-header h1{margin:0 0 8px;font-size:30px} header p{margin:0;opacity:.9;line-height:1.6}
-.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0}
-.kpi{background:#fff;border-radius:14px;padding:16px;border:1px solid var(--line);box-shadow:0 4px 12px rgba(20,40,70,.05)}
-.kpi b{display:block;font-size:22px;color:var(--navy);margin-bottom:5px}.kpi span{font-size:13px;color:var(--muted)}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-.tab{border:1px solid var(--line);background:#fff;color:#344054;padding:10px 13px;border-radius:10px;cursor:pointer;font-weight:700}
-.tab:hover{border-color:#a7c5e8}.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.card{background:#fff;border-radius:18px;padding:25px;border:1px solid var(--line);box-shadow:0 8px 24px rgba(16,24,40,.06);margin-bottom:26px}
-.title-row{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.badge{background:#eaf3ff;color:#155a9c;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
-h2{margin:0 0 8px;font-size:24px}.desc{margin:0 0 20px;color:var(--muted);line-height:1.6}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
-.field label{display:block;font-size:14px;font-weight:700;margin:0 0 7px}
-input,select{width:100%;border:1px solid #cfd8e6;border-radius:10px;padding:12px 13px;font-size:15px;background:#fff;outline:none}
-input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(25,118,210,.1)}
-.actions{display:flex;gap:10px;margin-top:18px}.btn{border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer}.primary{background:var(--blue);color:#fff}.secondary{background:#eef2f7;color:#344054}
-.result{margin-top:20px;background:#eff7ff;border:1px solid #cfe5ff;border-left:5px solid var(--blue);border-radius:12px;padding:18px;line-height:1.85}
-.result strong{color:#0d4f87;font-size:19px}.note{font-size:12px;color:var(--muted);margin-top:13px;line-height:1.6}
-.footer{font-size:12px;color:#7a8495;text-align:center;padding:0 15px 28px}
-@media(max-width:800px){.summary{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.title-row{display:block}.badge{display:inline-block;margin-bottom:10px}}
-@media(max-width:480px){header h1{font-size:25px}.summary{grid-template-columns:1fr 1fr}.tab{font-size:12px;padding:9px 10px}.card{padding:18px}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>청렴 신고 사건 조회</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, "Noto Sans KR", sans-serif; background: #f5f7fb; color: #18212f; }
+    header { background: linear-gradient(135deg, #173b7a, #2766c2); color: white; padding: 32px 20px; }
+    .wrap { max-width: 1180px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    header p { margin: 0; opacity: .9; }
+    main { padding: 24px 20px 48px; }
+    .panel { background: white; border-radius: 16px; padding: 18px; box-shadow: 0 8px 24px rgba(21,44,85,.08); margin-bottom: 22px; }
+    .filters { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end; }
+    label { display: block; font-size: 13px; color: #5a6575; margin-bottom: 6px; }
+    select, button { width: 100%; height: 42px; border-radius: 10px; border: 1px solid #d6dce6; padding: 0 12px; font-size: 15px; background: white; }
+    button { background: #173b7a; color: white; border: none; cursor: pointer; min-width: 110px; }
+    .count { font-weight: 700; margin: 4px 0 14px; font-size: 18px; }
+    .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .card { background: white; border: 1px solid #e4e8ef; border-radius: 14px; padding: 16px; box-shadow: 0 4px 14px rgba(0,0,0,.04); }
+    .card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+    .case-id { font-size: 13px; color: #667085; }
+    .badge { font-size: 12px; padding: 5px 9px; border-radius: 999px; background: #eef3fb; color: #17488f; font-weight: 700; }
+    .row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dashed #eef1f5; }
+    .row:last-child { border-bottom: 0; }
+    .k { color: #697586; font-size: 13px; }
+    .v { font-weight: 700; text-align: right; }
+    .news-list { display: grid; gap: 10px; }
+    .news-item { display: block; text-decoration: none; color: #18212f; border: 1px solid #e6e9ef; border-radius: 10px; padding: 12px 14px; background: #fafbfc; }
+    .news-item:hover { background: #f1f5fb; }
+    .rss-note { font-size: 13px; color: #667085; margin-top: 10px; line-height: 1.5; }
+    .empty { padding: 28px; background: white; border-radius: 14px; text-align: center; color: #667085; border: 1px solid #e4e8ef; grid-column: 1/-1; }
+    @media (max-width: 900px) { .cards { grid-template-columns: repeat(2, minmax(0,1fr)); } .filters { grid-template-columns: 1fr 1fr; } .filters button { grid-column: 1/-1; } }
+    @media (max-width: 620px) { .cards { grid-template-columns: 1fr; } .filters { grid-template-columns: 1fr; } .filters button { grid-column: auto; } h1 { font-size: 26px; } }
+  </style>
 </head>
 <body>
 <header>
   <div class="wrap">
-    <h1>보건복지 업무 계산기 10종</h1>
-    <p>실무에서 자주 반복되는 예산·복지·돌봄·인력 산정을 빠르게 계산하는 업무용 웹 도구입니다.</p>
+    <h1>청렴 신고 사건 조회</h1>
+    <p>신고유형과 처리상태를 선택해 시민이 빠르게 사건을 확인할 수 있습니다.</p>
   </div>
 </header>
-<main class="wrap" style="padding:0 16px">
-  <section class="summary">
-    <div class="kpi"><b>10종</b><span>주요 업무 계산기</span></div>
-    <div class="kpi"><b>즉시</b><span>브라우저에서 계산</span></div>
-    <div class="kpi"><b>반복업무</b><span>예산·인력·급여 중심</span></div>
-    <div class="kpi"><b>단일파일</b><span>설치 없이 실행</span></div>
+<main class="wrap">
+  <section class="panel">
+    <div class="filters">
+      <div><label for="typeFilter">신고유형</label><select id="typeFilter"><option value="">전체</option></select></div>
+      <div><label for="statusFilter">처리상태</label><select id="statusFilter"><option value="">전체</option></select></div>
+      <button id="resetBtn" type="button">초기화</button>
+    </div>
   </section>
-  <div class="tabs" id="tabs"></div>
-  <section id="app"></section>
+  <section>
+    <div class="count" id="resultCount">결과 0건</div>
+    <div class="cards" id="cards"></div>
+  </section>
+  <section class="panel" style="margin-top:26px;">
+    <h2 style="margin-top:0;">korea.kr 보도자료 RSS 최신 5건</h2>
+    <p style="color:#667085;line-height:1.6;">대한민국 정책브리핑 행정안전부 RSS 피드를 외부 리소스로 직접 임베드했습니다.</p>
+    <div style="margin:14px 0;"><a class="news-item" href="https://www.korea.kr/rss/dept_mois.xml" target="_blank" rel="noopener noreferrer">RSS 원본: https://www.korea.kr/rss/dept_mois.xml</a></div>
+    <iframe src="https://www.korea.kr/rss/dept_mois.xml" title="korea.kr 행정안전부 보도자료 RSS" style="width:100%;height:180px;border:1px solid #e4e8ef;border-radius:10px;margin-bottom:14px;background:#fff;"></iframe>
+    <div id="rssStatus" class="rss-note">RSS 최신 5건을 불러오는 중입니다.</div>
+    <div class="news-list" id="newsList"></div>
+  </section>
 </main>
-<div class="footer">※ 본 계산기는 업무 시뮬레이션용입니다. 실제 자격·급여·수가·사업비는 해당 연도 공식 지침을 확인하세요.</div>
+<script src="data1.js"></script>
+<script src="data2.js"></script>
+<script src="data3.js"></script>
+<script src="data4.js"></script>
+<script src="data5.js"></script>
 <script>
-const items = [
- {name:'복지사업 예산',cat:'예산',desc:'대상자 수와 1인당 월 지원액을 기준으로 월·연간 소요예산을 계산합니다.',fields:[['대상자 수','people',10000],['1인당 월 지원액(원)','monthly',100000]],calc:v=>`월 필요예산 <strong>${won(v.people*v.monthly)}</strong><br>연간 필요예산 <strong>${won(v.people*v.monthly*12)}</strong>`},
- {name:'기준중위소득 비율',cat:'복지',desc:'가구 월소득이 기준중위소득의 몇 %에 해당하는지 계산합니다.',fields:[['가구 월소득(원)','income',3000000],['해당 가구 기준중위소득(원)','median',5000000]],calc:v=>`기준중위소득 대비 <strong>${safe(v.income/v.median*100).toFixed(1)}%</strong>`},
- {name:'본인부담금',cat:'복지',desc:'서비스 가격과 본인부담률을 입력해 정부지원액과 본인부담액을 나눠 계산합니다.',fields:[['서비스 총액(원)','price',200000],['본인부담률(%)','rate',20]],calc:v=>`정부지원액 <strong>${won(v.price*(1-v.rate/100))}</strong><br>본인부담액 <strong>${won(v.price*v.rate/100)}</strong>`},
- {name:'돌봄서비스 비용',cat:'돌봄',desc:'시간당 단가와 월 이용시간을 기준으로 월·연간 서비스 비용을 산정합니다.',fields:[['시간당 단가(원)','unit',15000],['월 이용시간','hours',40]],calc:v=>`월 예상비용 <strong>${won(v.unit*v.hours)}</strong><br>연간 예상비용 <strong>${won(v.unit*v.hours*12)}</strong>`},
- {name:'통합돌봄 연계량',cat:'돌봄',desc:'대상자 수와 1인당 평균 서비스 연계 건수를 기준으로 총 연계량을 추정합니다.',fields:[['대상자 수','people',46000],['1인당 평균 연계 건수','links',3.3]],calc:v=>`예상 총 연계 건수 <strong>${num(v.people*v.links)}건</strong>`},
- {name:'담당자 업무량',cat:'행정',desc:'월 처리건수와 건당 평균 처리시간으로 총 업무시간과 필요한 인력을 계산합니다.',fields:[['월 처리 건수','cases',300],['건당 처리시간(분)','mins',30]],calc:v=>{const h=v.cases*v.mins/60; return `월 총 업무시간 <strong>${h.toFixed(1)}시간</strong><br>월 160시간 기준 필요 인력 <strong>${(h/160).toFixed(2)}명</strong>`}},
- {name:'복지사각지대 추정',cat:'복지',desc:'조사 대상 가구와 예상 위험비율을 기준으로 위기가구 규모를 추정합니다.',fields:[['조사 대상 가구','households',10000],['예상 위험비율(%)','rate',5]],calc:v=>`예상 위기가구 <strong>${num(v.households*v.rate/100)}가구</strong>`},
- {name:'노인 돌봄 수요',cat:'노인',desc:'노인인구와 돌봄 필요비율을 기준으로 예상 서비스 수요를 계산합니다.',fields:[['노인 인구','elderly',100000],['돌봄 필요비율(%)','rate',12]],calc:v=>`예상 돌봄 수요 <strong>${num(v.elderly*v.rate/100)}명</strong>`},
- {name:'정책변경 예산',cat:'예산',desc:'지원액 변경 전후의 연간 예산과 증감액·증감률을 비교합니다.',fields:[['대상자 수','people',100000],['기존 월 지원액(원)','old',100000],['변경 월 지원액(원)','newv',120000]],calc:v=>{const a=v.people*v.old*12,b=v.people*v.newv*12,d=b-a; return `기존 연간예산 <strong>${won(a)}</strong><br>변경 연간예산 <strong>${won(b)}</strong><br>연간 증감액 <strong>${won(d)}</strong><br>증감률 <strong>${safe(d/a*100).toFixed(1)}%</strong>`}},
- {name:'필요 인력 산정',cat:'인력',desc:'전체 대상자 수와 직원 1인당 담당 가능 인원을 기준으로 필요한 최소 인력을 계산합니다.',fields:[['전체 대상자 수','people',1000],['직원 1인당 담당 가능 인원','capacity',80]],calc:v=>`필요 인력 <strong>${Math.ceil(safe(v.people/v.capacity))}명</strong><br>산술상 인력 <strong>${safe(v.people/v.capacity).toFixed(2)}명</strong>`}
-];
-function safe(x){return Number.isFinite(x)?x:0}
-function won(x){return Math.round(safe(x)).toLocaleString('ko-KR')+'원'}
-function num(x){return Math.round(safe(x)).toLocaleString('ko-KR')}
-function renderTabs(active){
- document.getElementById('tabs').innerHTML=items.map((x,i)=>`<button class="tab ${i===active?'active':''}" onclick="render(${i})">${i+1}. ${x.name}</button>`).join('');
+const CASES = (window.CASE_CHUNKS || []).flat();
+const typeFilter = document.getElementById('typeFilter');
+const statusFilter = document.getElementById('statusFilter');
+const cards = document.getElementById('cards');
+const resultCount = document.getElementById('resultCount');
+const resetBtn = document.getElementById('resetBtn');
+function uniq(arr) { return [...new Set(arr.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'ko')); }
+function fillOptions(select, values) { values.forEach(v => { const opt = document.createElement('option'); opt.value = v; opt.textContent = v; select.appendChild(opt); }); }
+fillOptions(typeFilter, uniq(CASES.map(x => x['신고유형'])));
+fillOptions(statusFilter, uniq(CASES.map(x => x['처리상태'])));
+function esc(v) { return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function render() {
+  const type = typeFilter.value, status = statusFilter.value;
+  const filtered = CASES.filter(x => (!type || x['신고유형'] === type) && (!status || x['처리상태'] === status));
+  resultCount.textContent = `결과 ${filtered.length}건`;
+  if (!filtered.length) { cards.innerHTML = '<div class="empty">조건에 맞는 신고 사건이 없습니다.</div>'; return; }
+  cards.innerHTML = filtered.map(x => `<article class="card"><div class="card-top"><div class="case-id">${esc(x['사건ID'])}</div><div class="badge">${esc(x['처리상태'])}</div></div><div class="row"><span class="k">신고일자</span><span class="v">${esc(x['신고일자'])}</span></div><div class="row"><span class="k">신고유형</span><span class="v">${esc(x['신고유형'])}</span></div><div class="row"><span class="k">지역</span><span class="v">${esc(x['지역'])}</span></div><div class="row"><span class="k">처리상태</span><span class="v">${esc(x['처리상태'])}</span></div></article>`).join('');
 }
-function render(i){
- const x=items[i]; renderTabs(i);
- document.getElementById('app').innerHTML=`<div class="card"><div class="title-row"><div><h2>${i+1}. ${x.name}</h2><p class="desc">${x.desc}</p></div><span class="badge">${x.cat}</span></div><div class="grid">${x.fields.map(f=>`<div class="field"><label>${f[0]}</label><input type="number" id="${f[1]}" value="${f[2]}" min="0" step="any"></div>`).join('')}</div><div class="actions"><button class="btn primary" onclick="calculate(${i})">계산하기</button><button class="btn secondary" onclick="render(${i})">초기화</button></div><div id="result" class="result">값을 입력한 뒤 <b>계산하기</b>를 누르세요.</div><div class="note">입력값은 서버로 전송되지 않으며 현재 브라우저에서만 계산됩니다.</div></div>`;
+typeFilter.addEventListener('change', render); statusFilter.addEventListener('change', render); resetBtn.addEventListener('click', () => { typeFilter.value=''; statusFilter.value=''; render(); });
+const RSS_URL = "https://www.korea.kr/rss/dept_mois.xml";
+const RSS_PROXIES = [RSS_URL, "https://api.allorigins.win/raw?url=" + encodeURIComponent(RSS_URL), "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(RSS_URL)];
+async function fetchRssXml() { let lastError; for (const url of RSS_PROXIES) { try { const res = await fetch(url); if (!res.ok) throw new Error("HTTP " + res.status); const xmlText = await res.text(); if (!xmlText.includes("<item") && !xmlText.includes("<entry")) throw new Error("RSS 항목 없음"); return xmlText; } catch (e) { lastError=e; } } throw lastError || new Error("RSS를 불러올 수 없습니다."); }
+async function loadRSS() {
+  const newsList=document.getElementById("newsList"), rssStatus=document.getElementById("rssStatus");
+  try {
+    const xmlText=await fetchRssXml(); const xml=new DOMParser().parseFromString(xmlText,"application/xml"); const items=[...xml.querySelectorAll("item")].slice(0,5); if(items.length===0) throw new Error("RSS 게시물이 없습니다.");
+    newsList.innerHTML=items.map((item,i)=>{ const title=item.querySelector("title")?.textContent?.trim()||`보도자료 ${i+1}`; const link=item.querySelector("link")?.textContent?.trim()||RSS_URL; const date=item.querySelector("pubDate")?.textContent?.trim()||""; return `<a class="news-item" href="${esc(link)}" target="_blank" rel="noopener noreferrer"><strong>${i+1}. ${esc(title)}</strong><div style="font-size:12px;color:#7a8492;margin-top:5px;">${esc(date)}</div></a>`; }).join("");
+    rssStatus.textContent=`korea.kr RSS 최신 ${items.length}건`;
+  } catch (e) {
+    rssStatus.textContent="korea.kr RSS 원본 연결 상태를 확인하세요.";
+    newsList.innerHTML=Array.from({length:5},(_,i)=>`<a class="news-item" href="${RSS_URL}" target="_blank" rel="noopener noreferrer"><strong>${i+1}. korea.kr 보도자료 RSS</strong><div style="font-size:12px;color:#7a8492;margin-top:5px;">RSS 원본 피드에서 최신 항목을 불러옵니다.</div></a>`).join("");
+  }
 }
-function calculate(i){
- const x=items[i], v={}; x.fields.forEach(f=>v[f[1]]=Number(document.getElementById(f[1]).value)||0);
- document.getElementById('result').innerHTML=x.calc(v);
-}
-render(0);
+render(); loadRSS();
 </script>
 </body>
 </html>
