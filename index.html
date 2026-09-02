@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>보건복지 업무 계산기 10종</title>
+<style>
+:root{
+  --navy:#123b66; --blue:#1976d2; --light:#f4f7fb; --line:#dbe3ee;
+  --text:#1f2a37; --muted:#667085; --white:#fff; --green:#0f9d58;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans KR",sans-serif;background:var(--light);color:var(--text)}
+header{background:linear-gradient(135deg,#123b66,#1f5f98);color:#fff;padding:28px 20px}
+.wrap{max-width:1180px;margin:0 auto}
+header h1{margin:0 0 8px;font-size:30px} header p{margin:0;opacity:.9;line-height:1.6}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0}
+.kpi{background:#fff;border-radius:14px;padding:16px;border:1px solid var(--line);box-shadow:0 4px 12px rgba(20,40,70,.05)}
+.kpi b{display:block;font-size:22px;color:var(--navy);margin-bottom:5px}.kpi span{font-size:13px;color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tab{border:1px solid var(--line);background:#fff;color:#344054;padding:10px 13px;border-radius:10px;cursor:pointer;font-weight:700}
+.tab:hover{border-color:#a7c5e8}.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.card{background:#fff;border-radius:18px;padding:25px;border:1px solid var(--line);box-shadow:0 8px 24px rgba(16,24,40,.06);margin-bottom:26px}
+.title-row{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.badge{background:#eaf3ff;color:#155a9c;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+h2{margin:0 0 8px;font-size:24px}.desc{margin:0 0 20px;color:var(--muted);line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+.field label{display:block;font-size:14px;font-weight:700;margin:0 0 7px}
+input,select{width:100%;border:1px solid #cfd8e6;border-radius:10px;padding:12px 13px;font-size:15px;background:#fff;outline:none}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(25,118,210,.1)}
+.actions{display:flex;gap:10px;margin-top:18px}.btn{border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer}.primary{background:var(--blue);color:#fff}.secondary{background:#eef2f7;color:#344054}
+.result{margin-top:20px;background:#eff7ff;border:1px solid #cfe5ff;border-left:5px solid var(--blue);border-radius:12px;padding:18px;line-height:1.85}
+.result strong{color:#0d4f87;font-size:19px}.note{font-size:12px;color:var(--muted);margin-top:13px;line-height:1.6}
+.footer{font-size:12px;color:#7a8495;text-align:center;padding:0 15px 28px}
+@media(max-width:800px){.summary{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.title-row{display:block}.badge{display:inline-block;margin-bottom:10px}}
+@media(max-width:480px){header h1{font-size:25px}.summary{grid-template-columns:1fr 1fr}.tab{font-size:12px;padding:9px 10px}.card{padding:18px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>보건복지 업무 계산기 10종</h1>
+    <p>실무에서 자주 반복되는 예산·복지·돌봄·인력 산정을 빠르게 계산하는 업무용 웹 도구입니다.</p>
+  </div>
+</header>
+<main class="wrap" style="padding:0 16px">
+  <section class="summary">
+    <div class="kpi"><b>10종</b><span>주요 업무 계산기</span></div>
+    <div class="kpi"><b>즉시</b><span>브라우저에서 계산</span></div>
+    <div class="kpi"><b>반복업무</b><span>예산·인력·급여 중심</span></div>
+    <div class="kpi"><b>단일파일</b><span>설치 없이 실행</span></div>
+  </section>
+  <div class="tabs" id="tabs"></div>
+  <section id="app"></section>
+</main>
+<div class="footer">※ 본 계산기는 업무 시뮬레이션용입니다. 실제 자격·급여·수가·사업비는 해당 연도 공식 지침을 확인하세요.</div>
+<script>
+const items = [
+ {name:'복지사업 예산',cat:'예산',desc:'대상자 수와 1인당 월 지원액을 기준으로 월·연간 소요예산을 계산합니다.',fields:[['대상자 수','people',10000],['1인당 월 지원액(원)','monthly',100000]],calc:v=>`월 필요예산 <strong>${won(v.people*v.monthly)}</strong><br>연간 필요예산 <strong>${won(v.people*v.monthly*12)}</strong>`},
+ {name:'기준중위소득 비율',cat:'복지',desc:'가구 월소득이 기준중위소득의 몇 %에 해당하는지 계산합니다.',fields:[['가구 월소득(원)','income',3000000],['해당 가구 기준중위소득(원)','median',5000000]],calc:v=>`기준중위소득 대비 <strong>${safe(v.income/v.median*100).toFixed(1)}%</strong>`},
+ {name:'본인부담금',cat:'복지',desc:'서비스 가격과 본인부담률을 입력해 정부지원액과 본인부담액을 나눠 계산합니다.',fields:[['서비스 총액(원)','price',200000],['본인부담률(%)','rate',20]],calc:v=>`정부지원액 <strong>${won(v.price*(1-v.rate/100))}</strong><br>본인부담액 <strong>${won(v.price*v.rate/100)}</strong>`},
+ {name:'돌봄서비스 비용',cat:'돌봄',desc:'시간당 단가와 월 이용시간을 기준으로 월·연간 서비스 비용을 산정합니다.',fields:[['시간당 단가(원)','unit',15000],['월 이용시간','hours',40]],calc:v=>`월 예상비용 <strong>${won(v.unit*v.hours)}</strong><br>연간 예상비용 <strong>${won(v.unit*v.hours*12)}</strong>`},
+ {name:'통합돌봄 연계량',cat:'돌봄',desc:'대상자 수와 1인당 평균 서비스 연계 건수를 기준으로 총 연계량을 추정합니다.',fields:[['대상자 수','people',46000],['1인당 평균 연계 건수','links',3.3]],calc:v=>`예상 총 연계 건수 <strong>${num(v.people*v.links)}건</strong>`},
+ {name:'담당자 업무량',cat:'행정',desc:'월 처리건수와 건당 평균 처리시간으로 총 업무시간과 필요한 인력을 계산합니다.',fields:[['월 처리 건수','cases',300],['건당 처리시간(분)','mins',30]],calc:v=>{const h=v.cases*v.mins/60; return `월 총 업무시간 <strong>${h.toFixed(1)}시간</strong><br>월 160시간 기준 필요 인력 <strong>${(h/160).toFixed(2)}명</strong>`}},
+ {name:'복지사각지대 추정',cat:'복지',desc:'조사 대상 가구와 예상 위험비율을 기준으로 위기가구 규모를 추정합니다.',fields:[['조사 대상 가구','households',10000],['예상 위험비율(%)','rate',5]],calc:v=>`예상 위기가구 <strong>${num(v.households*v.rate/100)}가구</strong>`},
+ {name:'노인 돌봄 수요',cat:'노인',desc:'노인인구와 돌봄 필요비율을 기준으로 예상 서비스 수요를 계산합니다.',fields:[['노인 인구','elderly',100000],['돌봄 필요비율(%)','rate',12]],calc:v=>`예상 돌봄 수요 <strong>${num(v.elderly*v.rate/100)}명</strong>`},
+ {name:'정책변경 예산',cat:'예산',desc:'지원액 변경 전후의 연간 예산과 증감액·증감률을 비교합니다.',fields:[['대상자 수','people',100000],['기존 월 지원액(원)','old',100000],['변경 월 지원액(원)','newv',120000]],calc:v=>{const a=v.people*v.old*12,b=v.people*v.newv*12,d=b-a; return `기존 연간예산 <strong>${won(a)}</strong><br>변경 연간예산 <strong>${won(b)}</strong><br>연간 증감액 <strong>${won(d)}</strong><br>증감률 <strong>${safe(d/a*100).toFixed(1)}%</strong>`}},
+ {name:'필요 인력 산정',cat:'인력',desc:'전체 대상자 수와 직원 1인당 담당 가능 인원을 기준으로 필요한 최소 인력을 계산합니다.',fields:[['전체 대상자 수','people',1000],['직원 1인당 담당 가능 인원','capacity',80]],calc:v=>`필요 인력 <strong>${Math.ceil(safe(v.people/v.capacity))}명</strong><br>산술상 인력 <strong>${safe(v.people/v.capacity).toFixed(2)}명</strong>`}
+];
+function safe(x){return Number.isFinite(x)?x:0}
+function won(x){return Math.round(safe(x)).toLocaleString('ko-KR')+'원'}
+function num(x){return Math.round(safe(x)).toLocaleString('ko-KR')}
+function renderTabs(active){
+ document.getElementById('tabs').innerHTML=items.map((x,i)=>`<button class="tab ${i===active?'active':''}" onclick="render(${i})">${i+1}. ${x.name}</button>`).join('');
+}
+function render(i){
+ const x=items[i]; renderTabs(i);
+ document.getElementById('app').innerHTML=`<div class="card"><div class="title-row"><div><h2>${i+1}. ${x.name}</h2><p class="desc">${x.desc}</p></div><span class="badge">${x.cat}</span></div><div class="grid">${x.fields.map(f=>`<div class="field"><label>${f[0]}</label><input type="number" id="${f[1]}" value="${f[2]}" min="0" step="any"></div>`).join('')}</div><div class="actions"><button class="btn primary" onclick="calculate(${i})">계산하기</button><button class="btn secondary" onclick="render(${i})">초기화</button></div><div id="result" class="result">값을 입력한 뒤 <b>계산하기</b>를 누르세요.</div><div class="note">입력값은 서버로 전송되지 않으며 현재 브라우저에서만 계산됩니다.</div></div>`;
+}
+function calculate(i){
+ const x=items[i], v={}; x.fields.forEach(f=>v[f[1]]=Number(document.getElementById(f[1]).value)||0);
+ document.getElementById('result').innerHTML=x.calc(v);
+}
+render(0);
+</script>
+</body>
+</html>
